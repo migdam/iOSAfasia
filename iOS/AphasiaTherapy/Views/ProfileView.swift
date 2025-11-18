@@ -81,19 +81,35 @@ struct ProfileView: View {
                     }
 
                     // Language selector
-                    HStack {
-                        Text(localizationManager.localize("language_preference"))
-                        Spacer()
-                        Picker("", selection: $selectedLanguage) {
-                            ForEach(Language.allCases) { language in
-                                HStack {
-                                    Text(language.flag)
-                                    Text(language.displayName)
-                                }.tag(language)
-                            }
+                    NavigationLink(destination: LanguageSelectorView()) {
+                        HStack {
+                            Text(localizationManager.localize("language_preference"))
+                            Spacer()
+                            Text(localizationManager.currentLanguage.flag)
+                            Text(localizationManager.currentLanguage.displayName)
+                                .foregroundColor(.gray)
                         }
-                        .onChange(of: selectedLanguage) { newValue in
-                            localizationManager.setLanguage(newValue)
+                    }
+
+                    // AI Translation toggle
+                    VStack(alignment: .leading, spacing: 8) {
+                        Toggle(localizationManager.localize("ai_translation"), isOn: Binding(
+                            get: { localizationManager.useAITranslation },
+                            set: { localizationManager.toggleAITranslation($0) }
+                        ))
+
+                        Text(localizationManager.localize("ai_translation_desc"))
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+
+                    if localizationManager.isLoadingTranslations {
+                        HStack {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                            Text(localizationManager.localize("loading"))
+                                .font(.caption)
+                                .foregroundColor(.gray)
                         }
                     }
                 }

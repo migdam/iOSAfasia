@@ -2,7 +2,7 @@
 //  LocalizationManager.swift
 //  AphasiaTherapy
 //
-//  Manages internationalization and localization
+//  Manages internationalization and localization with AI-powered translation
 //
 
 import Foundation
@@ -12,31 +12,190 @@ class LocalizationManager: ObservableObject {
     @Published var currentLanguage: Language = .english {
         didSet {
             UserDefaults.standard.set(currentLanguage.rawValue, forKey: "selectedLanguage")
+            // Pre-load translations for the new language
+            Task {
+                await loadAITranslations()
+            }
         }
     }
 
+    @Published var isLoadingTranslations = false
+    @Published var useAITranslation = true
+
     private var translations: [Language: [String: String]] = [:]
+    private let translationService = TranslationService.shared
+    private let baseKeys: [String] = []
 
     init() {
-        loadTranslations()
+        loadHardcodedTranslations()
 
         // Load saved language preference
         if let savedLanguage = UserDefaults.standard.string(forKey: "selectedLanguage"),
            let language = Language(rawValue: savedLanguage) {
             currentLanguage = language
         }
+
+        // Check if AI translation is enabled
+        useAITranslation = UserDefaults.standard.bool(forKey: "useAITranslation")
     }
 
+    // MARK: - Localization
+
     func localize(_ key: String) -> String {
-        translations[currentLanguage]?[key] ?? key
+        // Try hardcoded translations first
+        if let translation = translations[currentLanguage]?[key] {
+            return translation
+        }
+
+        // If AI translation is enabled and we have an English base
+        if useAITranslation, let englishText = translations[.english]?[key] {
+            // Try to get cached AI translation
+            if let cached = translationService.cacheManager.getCachedTranslation(
+                text: englishText,
+                sourceLanguage: .english,
+                targetLanguage: currentLanguage
+            ) {
+                return cached
+            }
+
+            // Return English and translate in background
+            Task {
+                await translateKey(key, baseText: englishText)
+            }
+        }
+
+        // Fallback to key or English
+        return translations[.english]?[key] ?? key
     }
+
+    func localizeAsync(_ key: String) async -> String {
+        // Try hardcoded translations first
+        if let translation = translations[currentLanguage]?[key] {
+            return translation
+        }
+
+        // If AI translation is enabled
+        if useAITranslation, let englishText = translations[.english]?[key] {
+            do {
+                let translation = try await translationService.translate(
+                    text: englishText,
+                    to: currentLanguage,
+                    from: .english
+                )
+
+                // Store in memory
+                if translations[currentLanguage] == nil {
+                    translations[currentLanguage] = [:]
+                }
+                translations[currentLanguage]?[key] = translation
+
+                return translation
+            } catch {
+                print("Translation error: \(error)")
+            }
+        }
+
+        // Fallback to English
+        return translations[.english]?[key] ?? key
+    }
+
+    // MARK: - AI Translation Loading
+
+    func loadAITranslations() async {
+        guard useAITranslation else { return }
+        guard currentLanguage != .english else { return }
+
+        // Don't reload if we have translations
+        if translations[currentLanguage]?.count ?? 0 > 50 {
+            return
+        }
+
+        await MainActor.run {
+            isLoadingTranslations = true
+        }
+
+        // Get all English keys
+        guard let englishTranslations = translations[.english] else {
+            await MainActor.run {
+                isLoadingTranslations = false
+            }
+            return
+        }
+
+        do {
+            // Translate in batches
+            let keys = Array(englishTranslations.keys)
+            let texts = keys.compactMap { englishTranslations[$0] }
+
+            let translatedTexts = try await translationService.translateBatch(
+                texts: texts,
+                to: currentLanguage,
+                from: .english
+            )
+
+            // Store translations
+            await MainActor.run {
+                if translations[currentLanguage] == nil {
+                    translations[currentLanguage] = [:]
+                }
+
+                for (index, key) in keys.enumerated() {
+                    if let englishText = englishTranslations[key],
+                       let translation = translatedTexts[englishText] {
+                        translations[currentLanguage]?[key] = translation
+                    }
+                }
+
+                isLoadingTranslations = false
+            }
+        } catch {
+            print("Failed to load AI translations: \(error)")
+            await MainActor.run {
+                isLoadingTranslations = false
+            }
+        }
+    }
+
+    private func translateKey(_ key: String, baseText: String) async {
+        do {
+            let translation = try await translationService.translate(
+                text: baseText,
+                to: currentLanguage,
+                from: .english
+            )
+
+            await MainActor.run {
+                if translations[currentLanguage] == nil {
+                    translations[currentLanguage] = [:]
+                }
+                translations[currentLanguage]?[key] = translation
+            }
+        } catch {
+            print("Failed to translate '\(key)': \(error)")
+        }
+    }
+
+    // MARK: - Language Management
 
     func setLanguage(_ language: Language) {
         currentLanguage = language
     }
 
-    private func loadTranslations() {
-        // English translations
+    func toggleAITranslation(_ enabled: Bool) {
+        useAITranslation = enabled
+        UserDefaults.standard.set(enabled, forKey: "useAITranslation")
+
+        if enabled {
+            Task {
+                await loadAITranslations()
+            }
+        }
+    }
+
+    // MARK: - Hardcoded Translations (Fallback)
+
+    private func loadHardcodedTranslations() {
+        // English translations (base language)
         translations[.english] = [
             // Common
             "app_name": "Aphasia Therapy",
@@ -50,6 +209,7 @@ class LocalizationManager: ObservableObject {
             "previous": "Previous",
             "submit": "Submit",
             "close": "Close",
+            "loading": "Loading...",
 
             // Authentication
             "login": "Log In",
@@ -117,6 +277,8 @@ class LocalizationManager: ObservableObject {
             "about": "About",
             "version": "Version",
             "support": "Support",
+            "ai_translation": "AI Translation",
+            "ai_translation_desc": "Use AI for automatic translation to any language",
 
             // Exercise Session
             "exercise_progress": "Exercise Progress",
@@ -146,7 +308,7 @@ class LocalizationManager: ObservableObject {
             "try_again": "Try Again",
         ]
 
-        // Polish translations
+        // Polish translations (pre-translated)
         translations[.polish] = [
             // Common
             "app_name": "Terapia Afazji",
@@ -160,6 +322,7 @@ class LocalizationManager: ObservableObject {
             "previous": "Poprzedni",
             "submit": "Wyślij",
             "close": "Zamknij",
+            "loading": "Ładowanie...",
 
             // Authentication
             "login": "Zaloguj się",
@@ -227,6 +390,8 @@ class LocalizationManager: ObservableObject {
             "about": "O aplikacji",
             "version": "Wersja",
             "support": "Wsparcie",
+            "ai_translation": "Tłumaczenie AI",
+            "ai_translation_desc": "Użyj AI do automatycznego tłumaczenia na dowolny język",
 
             // Exercise Session
             "exercise_progress": "Postęp ćwiczeń",
@@ -258,23 +423,154 @@ class LocalizationManager: ObservableObject {
     }
 }
 
+// MARK: - Extended Language Support
+
 enum Language: String, CaseIterable, Identifiable {
+    // European Languages
     case english = "en"
     case polish = "pl"
+    case spanish = "es"
+    case french = "fr"
+    case german = "de"
+    case italian = "it"
+    case portuguese = "pt"
+    case dutch = "nl"
+    case russian = "ru"
+    case ukrainian = "uk"
+    case czech = "cs"
+    case romanian = "ro"
+    case greek = "el"
+    case swedish = "sv"
+    case norwegian = "no"
+    case danish = "da"
+    case finnish = "fi"
+    case hungarian = "hu"
+    case turkish = "tr"
+
+    // Asian Languages
+    case chinese = "zh"
+    case japanese = "ja"
+    case korean = "ko"
+    case hindi = "hi"
+    case bengali = "bn"
+    case vietnamese = "vi"
+    case thai = "th"
+    case indonesian = "id"
+    case filipino = "fil"
+    case malay = "ms"
+
+    // Middle Eastern Languages
+    case arabic = "ar"
+    case hebrew = "he"
+    case persian = "fa"
+    case urdu = "ur"
+
+    // Other Languages
+    case swahili = "sw"
+    case afrikaans = "af"
 
     var id: String { rawValue }
 
     var displayName: String {
         switch self {
+        // European
         case .english: return "English"
         case .polish: return "Polski"
+        case .spanish: return "Español"
+        case .french: return "Français"
+        case .german: return "Deutsch"
+        case .italian: return "Italiano"
+        case .portuguese: return "Português"
+        case .dutch: return "Nederlands"
+        case .russian: return "Русский"
+        case .ukrainian: return "Українська"
+        case .czech: return "Čeština"
+        case .romanian: return "Română"
+        case .greek: return "Ελληνικά"
+        case .swedish: return "Svenska"
+        case .norwegian: return "Norsk"
+        case .danish: return "Dansk"
+        case .finnish: return "Suomi"
+        case .hungarian: return "Magyar"
+        case .turkish: return "Türkçe"
+
+        // Asian
+        case .chinese: return "中文"
+        case .japanese: return "日本語"
+        case .korean: return "한국어"
+        case .hindi: return "हिन्दी"
+        case .bengali: return "বাংলা"
+        case .vietnamese: return "Tiếng Việt"
+        case .thai: return "ไทย"
+        case .indonesian: return "Bahasa Indonesia"
+        case .filipino: return "Filipino"
+        case .malay: return "Bahasa Melayu"
+
+        // Middle Eastern
+        case .arabic: return "العربية"
+        case .hebrew: return "עברית"
+        case .persian: return "فارسی"
+        case .urdu: return "اردو"
+
+        // Other
+        case .swahili: return "Kiswahili"
+        case .afrikaans: return "Afrikaans"
         }
     }
 
     var flag: String {
         switch self {
+        // European
         case .english: return "🇬🇧"
         case .polish: return "🇵🇱"
+        case .spanish: return "🇪🇸"
+        case .french: return "🇫🇷"
+        case .german: return "🇩🇪"
+        case .italian: return "🇮🇹"
+        case .portuguese: return "🇵🇹"
+        case .dutch: return "🇳🇱"
+        case .russian: return "🇷🇺"
+        case .ukrainian: return "🇺🇦"
+        case .czech: return "🇨🇿"
+        case .romanian: return "🇷🇴"
+        case .greek: return "🇬🇷"
+        case .swedish: return "🇸🇪"
+        case .norwegian: return "🇳🇴"
+        case .danish: return "🇩🇰"
+        case .finnish: return "🇫🇮"
+        case .hungarian: return "🇭🇺"
+        case .turkish: return "🇹🇷"
+
+        // Asian
+        case .chinese: return "🇨🇳"
+        case .japanese: return "🇯🇵"
+        case .korean: return "🇰🇷"
+        case .hindi: return "🇮🇳"
+        case .bengali: return "🇧🇩"
+        case .vietnamese: return "🇻🇳"
+        case .thai: return "🇹🇭"
+        case .indonesian: return "🇮🇩"
+        case .filipino: return "🇵🇭"
+        case .malay: return "🇲🇾"
+
+        // Middle Eastern
+        case .arabic: return "🇸🇦"
+        case .hebrew: return "🇮🇱"
+        case .persian: return "🇮🇷"
+        case .urdu: return "🇵🇰"
+
+        // Other
+        case .swahili: return "🇰🇪"
+        case .afrikaans: return "🇿🇦"
+        }
+    }
+
+    var isRTL: Bool {
+        switch self {
+        case .arabic, .hebrew, .persian, .urdu:
+            return true
+        default:
+            return false
         }
     }
 }
