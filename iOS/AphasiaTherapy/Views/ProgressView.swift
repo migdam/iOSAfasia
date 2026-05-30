@@ -264,6 +264,10 @@ struct PerformanceChartView: View {
 struct LegacyChartView: View {
     let sessions: [SessionHistory]
 
+    private var sortedSessions: [SessionHistory] {
+        sessions.sorted { $0.completedAt < $1.completedAt }
+    }
+
     var body: some View {
         GeometryReader { geometry in
             ZStack {
@@ -298,11 +302,10 @@ struct LegacyChartView: View {
                 .stroke(Color.blue, lineWidth: 2)
 
                 // Points
-                ForEach(Array(sessions.sorted { $0.completedAt < $1.completedAt }.enumerated()), id: \.element.id) { index, session in
-                    let sortedSessions = sessions.sorted { $0.completedAt < $1.completedAt }
+                ForEach(sortedSessions.indices, id: \.self) { index in
                     let xStep = geometry.size.width / CGFloat(max(sortedSessions.count - 1, 1))
                     let x = CGFloat(index) * xStep
-                    let y = geometry.size.height - (CGFloat(session.score) / 100.0 * geometry.size.height)
+                    let y = geometry.size.height - (CGFloat(sortedSessions[index].score) / 100.0 * geometry.size.height)
 
                     Circle()
                         .fill(Color.blue)

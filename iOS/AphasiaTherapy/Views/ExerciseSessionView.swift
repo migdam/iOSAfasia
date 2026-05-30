@@ -327,6 +327,7 @@ struct ExerciseContentView: View {
 
     private var languageCode: String { localizationManager.currentLanguage.rawValue }
     private var cues: [Cue] { CueGenerator.cues(for: exercise) }
+    private var revealedCues: [Cue] { Array(cues.prefix(revealedCueCount)) }
 
     var body: some View {
         VStack(spacing: 25) {
@@ -429,7 +430,7 @@ struct ExerciseContentView: View {
 
     private var cuePanel: some View {
         VStack(alignment: .leading, spacing: 10) {
-            ForEach(Array(cues.prefix(revealedCueCount).enumerated()), id: \.offset) { _, cue in
+            ForEach(revealedCues) { cue in
                 HStack(alignment: .top, spacing: 10) {
                     Image(systemName: "lightbulb.fill")
                         .foregroundColor(.orange)

@@ -96,11 +96,13 @@ enum AnswerEvaluator {
 // MARK: - Cueing Hierarchy
 
 /// A single cue, ordered from least to most revealing.
-struct Cue {
+struct Cue: Identifiable {
     enum Kind {
         case semantic, phonemic, syllable, partialSpelling, wholeWord
     }
 
+    /// Stable, content-derived id so SwiftUI can diff cues across renders.
+    var id: String { "\(kind)-\(text)" }
     let kind: Kind
     let label: String   // short heading, e.g. "First sound"
     let text: String    // the cue shown to the user
@@ -182,9 +184,14 @@ enum CueGenerator {
     static func maskedSpelling(_ word: String) -> String {
         let chars = Array(word)
         let reveal = max(1, chars.count / 2)
-        return chars.enumerated().map { index, ch in
-            if ch == " " { return "/" }
-            return index < reveal ? String(ch) : "_"
-        }.joined(separator: " ")
+        var parts: [String] = []
+        for (index, ch) in chars.enumerated() {
+            if ch == " " {
+                parts.append("/")
+            } else {
+                parts.append(index < reveal ? String(ch) : "_")
+            }
+        }
+        return parts.joined(separator: " ")
     }
 }
