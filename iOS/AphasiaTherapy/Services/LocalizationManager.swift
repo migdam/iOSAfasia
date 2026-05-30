@@ -35,8 +35,12 @@ class LocalizationManager: ObservableObject {
             currentLanguage = language
         }
 
-        // Check if AI translation is enabled
-        useAITranslation = UserDefaults.standard.bool(forKey: "useAITranslation")
+        // Respect a saved preference; otherwise keep the default (AI translation on).
+        // bool(forKey:) returns false for an unset key, which previously disabled the
+        // feature on first launch despite the `= true` default above.
+        if UserDefaults.standard.object(forKey: "useAITranslation") != nil {
+            useAITranslation = UserDefaults.standard.bool(forKey: "useAITranslation")
+        }
     }
 
     // MARK: - Localization
@@ -305,7 +309,6 @@ class LocalizationManager: ObservableObject {
             "error_loading": "Error loading data",
             "error_network": "Network error. Please check your connection.",
             "error_auth": "Authentication error. Please log in again.",
-            "try_again": "Try Again",
         ]
 
         // Polish translations (pre-translated)
@@ -418,7 +421,6 @@ class LocalizationManager: ObservableObject {
             "error_loading": "Błąd wczytywania danych",
             "error_network": "Błąd sieci. Sprawdź połączenie.",
             "error_auth": "Błąd uwierzytelniania. Zaloguj się ponownie.",
-            "try_again": "Spróbuj ponownie",
         ]
     }
 }

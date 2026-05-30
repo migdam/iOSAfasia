@@ -7,21 +7,55 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AphasiaTherapyApp.swift in Sources = {isa = PBXBuildFile; };
-		ContentView.swift in Sources = {isa = PBXBuildFile; };
-		Assets.xcassets in Resources = {isa = PBXBuildFile; };
+		BF0000000000000000000001 /* AphasiaTherapyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000001 /* AphasiaTherapyApp.swift */; };
+		BF0000000000000000000002 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000002 /* ContentView.swift */; };
+		BF0000000000000000000003 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000003 /* User.swift */; };
+		BF0000000000000000000004 /* TherapySession.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000004 /* TherapySession.swift */; };
+		BF0000000000000000000005 /* Progress.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000005 /* Progress.swift */; };
+		BF0000000000000000000006 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000006 /* MainTabView.swift */; };
+		BF0000000000000000000007 /* AuthenticationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000007 /* AuthenticationView.swift */; };
+		BF0000000000000000000008 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000008 /* HomeView.swift */; };
+		BF0000000000000000000009 /* SessionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000009 /* SessionsView.swift */; };
+		BF000000000000000000000A /* ProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE000000000000000000000A /* ProgressView.swift */; };
+		BF000000000000000000000B /* ExerciseSessionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE000000000000000000000B /* ExerciseSessionView.swift */; };
+		BF000000000000000000000C /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE000000000000000000000C /* ProfileView.swift */; };
+		BF000000000000000000000D /* LanguageSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE000000000000000000000D /* LanguageSelectorView.swift */; };
+		BF000000000000000000000E /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE000000000000000000000E /* APIClient.swift */; };
+		BF000000000000000000000F /* AuthenticationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE000000000000000000000F /* AuthenticationManager.swift */; };
+		BF0000000000000000000010 /* TranslationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000010 /* TranslationService.swift */; };
+		BF0000000000000000000011 /* LocalizationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000011 /* LocalizationManager.swift */; };
+		BF0000000000000000000012 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000012 /* Extensions.swift */; };
+		BF0000000000000000000013 /* DeviceHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000013 /* DeviceHelper.swift */; };
+		BF0000000000000000000014 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000014 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		AphasiaTherapy.app = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AphasiaTherapy.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		AphasiaTherapyApp.swift = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AphasiaTherapyApp.swift; sourceTree = "<group>"; };
-		ContentView.swift = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		Assets.xcassets = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		Info.plist = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FE0000000000000000000001 /* AphasiaTherapyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AphasiaTherapyApp.swift; sourceTree = "<group>"; };
+		FE0000000000000000000002 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		FE0000000000000000000003 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		FE0000000000000000000004 /* TherapySession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TherapySession.swift; sourceTree = "<group>"; };
+		FE0000000000000000000005 /* Progress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Progress.swift; sourceTree = "<group>"; };
+		FE0000000000000000000006 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		FE0000000000000000000007 /* AuthenticationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationView.swift; sourceTree = "<group>"; };
+		FE0000000000000000000008 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		FE0000000000000000000009 /* SessionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionsView.swift; sourceTree = "<group>"; };
+		FE000000000000000000000A /* ProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressView.swift; sourceTree = "<group>"; };
+		FE000000000000000000000B /* ExerciseSessionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseSessionView.swift; sourceTree = "<group>"; };
+		FE000000000000000000000C /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		FE000000000000000000000D /* LanguageSelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageSelectorView.swift; sourceTree = "<group>"; };
+		FE000000000000000000000E /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		FE000000000000000000000F /* AuthenticationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManager.swift; sourceTree = "<group>"; };
+		FE0000000000000000000010 /* TranslationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationService.swift; sourceTree = "<group>"; };
+		FE0000000000000000000011 /* LocalizationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationManager.swift; sourceTree = "<group>"; };
+		FE0000000000000000000012 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		FE0000000000000000000013 /* DeviceHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceHelper.swift; sourceTree = "<group>"; };
+		FE0000000000000000000014 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		FE0000000000000000000015 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FE0000000000000000000016 /* AphasiaTherapy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AphasiaTherapy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		{
+		AA0000000000000000000002 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -31,50 +65,100 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		{
+		EE0000000000000000000001 = {
 			isa = PBXGroup;
 			children = (
-				AphasiaTherapy,
-				Products,
+				EE0000000000000000000002 /* AphasiaTherapy */,
+				EE0000000000000000000008 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		Products = {
+		EE0000000000000000000002 /* AphasiaTherapy */ = {
 			isa = PBXGroup;
 			children = (
-				AphasiaTherapy.app,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		AphasiaTherapy = {
-			isa = PBXGroup;
-			children = (
-				AphasiaTherapyApp.swift,
-				ContentView.swift,
-				Models,
-				Views,
-				ViewModels,
-				Services,
-				Resources,
-				Utilities,
-				Localization,
-				Assets.xcassets,
-				Info.plist,
+				FE0000000000000000000001 /* AphasiaTherapyApp.swift */,
+				FE0000000000000000000002 /* ContentView.swift */,
+				EE0000000000000000000003 /* Models */,
+				EE0000000000000000000004 /* Views */,
+				EE0000000000000000000005 /* Services */,
+				EE0000000000000000000006 /* Utilities */,
+				EE0000000000000000000007 /* Resources */,
+				FE0000000000000000000015 /* Info.plist */,
 			);
 			path = AphasiaTherapy;
+			sourceTree = "<group>";
+		};
+		EE0000000000000000000003 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				FE0000000000000000000003 /* User.swift */,
+				FE0000000000000000000004 /* TherapySession.swift */,
+				FE0000000000000000000005 /* Progress.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		EE0000000000000000000004 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				FE0000000000000000000006 /* MainTabView.swift */,
+				FE0000000000000000000007 /* AuthenticationView.swift */,
+				FE0000000000000000000008 /* HomeView.swift */,
+				FE0000000000000000000009 /* SessionsView.swift */,
+				FE000000000000000000000A /* ProgressView.swift */,
+				FE000000000000000000000B /* ExerciseSessionView.swift */,
+				FE000000000000000000000C /* ProfileView.swift */,
+				FE000000000000000000000D /* LanguageSelectorView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		EE0000000000000000000005 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				FE000000000000000000000E /* APIClient.swift */,
+				FE000000000000000000000F /* AuthenticationManager.swift */,
+				FE0000000000000000000010 /* TranslationService.swift */,
+				FE0000000000000000000011 /* LocalizationManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		EE0000000000000000000006 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				FE0000000000000000000012 /* Extensions.swift */,
+				FE0000000000000000000013 /* DeviceHelper.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		EE0000000000000000000007 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				FE0000000000000000000014 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		EE0000000000000000000008 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FE0000000000000000000016 /* AphasiaTherapy.app */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		AphasiaTherapy = {
+		7A0000000000000000000001 /* AphasiaTherapy */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AphasiaTherapy;
+			buildConfigurationList = CF0000000000000000000002 /* Build configuration list for PBXNativeTarget "AphasiaTherapy" */;
 			buildPhases = (
-				Sources,
-				Frameworks,
-				Resources,
+				AA0000000000000000000001 /* Sources */,
+				AA0000000000000000000002 /* Frameworks */,
+				AA0000000000000000000003 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -82,84 +166,151 @@
 			);
 			name = AphasiaTherapy;
 			productName = AphasiaTherapy;
-			productReference = AphasiaTherapy.app;
+			productReference = FE0000000000000000000016 /* AphasiaTherapy.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		{
+		0C0000000000000000000001 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
-					AphasiaTherapy = {
+					7A0000000000000000000001 = {
 						CreatedOnToolsVersion = 15.0;
 					};
 				};
 			};
-			buildConfigurationList = AphasiaTherapy;
+			buildConfigurationList = CF0000000000000000000001 /* Build configuration list for PBXProject "AphasiaTherapy" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				pl,
+				Base,
 			);
-			mainGroup = ;
-			productRefGroup = Products;
+			mainGroup = EE0000000000000000000001;
+			productRefGroup = EE0000000000000000000008 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				AphasiaTherapy,
+				7A0000000000000000000001 /* AphasiaTherapy */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		{
+		AA0000000000000000000003 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				Assets.xcassets in Resources,
+				BF0000000000000000000014 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		{
+		AA0000000000000000000001 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AphasiaTherapyApp.swift in Sources,
-				ContentView.swift in Sources,
+				BF0000000000000000000001 /* AphasiaTherapyApp.swift in Sources */,
+				BF0000000000000000000002 /* ContentView.swift in Sources */,
+				BF0000000000000000000003 /* User.swift in Sources */,
+				BF0000000000000000000004 /* TherapySession.swift in Sources */,
+				BF0000000000000000000005 /* Progress.swift in Sources */,
+				BF0000000000000000000006 /* MainTabView.swift in Sources */,
+				BF0000000000000000000007 /* AuthenticationView.swift in Sources */,
+				BF0000000000000000000008 /* HomeView.swift in Sources */,
+				BF0000000000000000000009 /* SessionsView.swift in Sources */,
+				BF000000000000000000000A /* ProgressView.swift in Sources */,
+				BF000000000000000000000B /* ExerciseSessionView.swift in Sources */,
+				BF000000000000000000000C /* ProfileView.swift in Sources */,
+				BF000000000000000000000D /* LanguageSelectorView.swift in Sources */,
+				BF000000000000000000000E /* APIClient.swift in Sources */,
+				BF000000000000000000000F /* AuthenticationManager.swift in Sources */,
+				BF0000000000000000000010 /* TranslationService.swift in Sources */,
+				BF0000000000000000000011 /* LocalizationManager.swift in Sources */,
+				BF0000000000000000000012 /* Extensions.swift in Sources */,
+				BF0000000000000000000013 /* DeviceHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		Debug = {
+		CB0000000000000000000001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		CB0000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		CB0000000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = AphasiaTherapy/Info.plist;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -176,24 +327,17 @@
 			};
 			name = Debug;
 		};
-		Release = {
+		CB0000000000000000000004 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = AphasiaTherapy/Info.plist;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -213,16 +357,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		AphasiaTherapy = {
+		CF0000000000000000000001 /* Build configuration list for PBXProject "AphasiaTherapy" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				Debug,
-				Release,
+				CB0000000000000000000001 /* Debug */,
+				CB0000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CF0000000000000000000002 /* Build configuration list for PBXNativeTarget "AphasiaTherapy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CB0000000000000000000003 /* Debug */,
+				CB0000000000000000000004 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = Project;
+	rootObject = 0C0000000000000000000001 /* Project object */;
 }

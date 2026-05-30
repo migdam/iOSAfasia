@@ -158,7 +158,7 @@ struct HomeView: View {
                 }
             } catch {
                 print("Error loading progress: \(error)")
-                isLoading = false
+                await MainActor.run { self.isLoading = false }
             }
         }
     }

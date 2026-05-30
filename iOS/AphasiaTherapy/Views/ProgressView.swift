@@ -8,7 +8,7 @@
 import SwiftUI
 import Charts
 
-struct ProgressView: View {
+struct ProgressDashboardView: View {
     @EnvironmentObject var authManager: AuthenticationManager
     @EnvironmentObject var apiClient: APIClient
     @EnvironmentObject var localizationManager: LocalizationManager
@@ -149,7 +149,7 @@ struct ProgressView: View {
                 }
             } catch {
                 print("Error loading progress: \(error)")
-                isLoading = false
+                await MainActor.run { self.isLoading = false }
             }
         }
     }
@@ -402,9 +402,9 @@ enum TimeRange: String, CaseIterable, Identifiable {
     var displayName: String { rawValue }
 }
 
-struct ProgressView_Previews: PreviewProvider {
+struct ProgressDashboardView_Previews: PreviewProvider {
     static var previews: some View {
-        ProgressView()
+        ProgressDashboardView()
             .environmentObject(AuthenticationManager())
             .environmentObject(APIClient())
             .environmentObject(LocalizationManager())

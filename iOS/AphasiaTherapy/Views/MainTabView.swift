@@ -25,7 +25,7 @@ struct MainTabView: View {
                 }
                 .tag(1)
 
-            ProgressView()
+            ProgressDashboardView()
                 .tabItem {
                     Label(localizationManager.localize("progress"), systemImage: "chart.line.uptrend.xyaxis")
                 }

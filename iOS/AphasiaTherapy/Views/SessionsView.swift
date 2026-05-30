@@ -127,7 +127,7 @@ struct SessionsView: View {
                 }
             } catch {
                 print("Error loading sessions: \(error)")
-                isLoading = false
+                await MainActor.run { self.isLoading = false }
             }
         }
     }

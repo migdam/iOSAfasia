@@ -132,7 +132,7 @@ struct ExerciseSessionView: View {
                 }
             } catch {
                 print("Error loading exercises: \(error)")
-                isLoading = false
+                await MainActor.run { self.isLoading = false }
             }
         }
     }
@@ -218,7 +218,7 @@ struct ExerciseSessionView: View {
                 }
             } catch {
                 print("Error submitting progress: \(error)")
-                showCompletionView = true
+                await MainActor.run { self.showCompletionView = true }
             }
         }
     }
