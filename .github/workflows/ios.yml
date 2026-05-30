@@ -15,8 +15,6 @@ jobs:
   build:
     name: Build (iOS Simulator)
     runs-on: macos-latest
-    permissions:
-      contents: write
     defaults:
       run:
         working-directory: iOS
@@ -39,28 +37,4 @@ jobs:
             -configuration Debug \
             -destination 'generic/platform=iOS Simulator' \
             CODE_SIGNING_ALLOWED=NO \
-            clean build 2>&1 | tee /tmp/build.log
-
-      # The sandbox driving this PR can read git but not the Actions API/logs,
-      # so on failure publish the diagnostics to a side branch it can fetch.
-      # Pushing to `ci-logs` does not match any trigger above, so it cannot loop.
-      - name: Publish build log on failure
-        if: failure()
-        working-directory: ${{ github.workspace }}
-        run: |
-          {
-            echo "commit: ${{ github.sha }}"
-            echo "===== error: lines ====="
-            grep -nE 'error:|cannot find|no such module|has no member' /tmp/build.log || echo "(no error: lines matched)"
-            echo "===== last 300 lines ====="
-            tail -300 /tmp/build.log
-          } > /tmp/ci-report.txt
-          git config user.email "ci@example.com"
-          git config user.name "ci-bot"
-          git worktree add -f /tmp/cilogs HEAD
-          cd /tmp/cilogs
-          git checkout -B ci-logs
-          cp /tmp/ci-report.txt ./ci-report.txt
-          git add -f ci-report.txt
-          git commit -m "ci: build report [skip ci]"
-          git push -f origin ci-logs
+            clean build
