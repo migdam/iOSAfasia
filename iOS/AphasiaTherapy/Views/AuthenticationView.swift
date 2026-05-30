@@ -137,6 +137,18 @@ struct AuthenticationView: View {
                         .cornerRadius(20)
                         .shadow(radius: 10)
                         .padding(.horizontal, 20)
+
+                        // No-account practice path — removes the login barrier for
+                        // users who struggle with typed credentials.
+                        Button(action: { authManager.continueAsGuest() }) {
+                            Text(localizationManager.localize("practice_no_account"))
+                                .fontWeight(.semibold)
+                                .foregroundColor(.white)
+                                .padding(.vertical, 12)
+                                .padding(.horizontal, 24)
+                                .background(Color.white.opacity(0.2))
+                                .cornerRadius(12)
+                        }
                     }
                     .padding(.bottom, 50)
                 }

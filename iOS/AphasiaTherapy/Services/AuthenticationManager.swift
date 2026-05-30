@@ -14,6 +14,8 @@ class AuthenticationManager: ObservableObject {
     @Published var authToken: String?
     @Published var isLoading = false
     @Published var errorMessage: String?
+    /// True when the user chose the no-login "practice" mode.
+    @Published var isGuest = false
 
     private let apiClient: APIClient
     private let keychainService = KeychainService()
@@ -96,6 +98,14 @@ class AuthenticationManager: ObservableObject {
         authToken = nil
         currentUser = nil
         isAuthenticated = false
+        isGuest = false
+    }
+
+    /// Enters a no-account practice session backed by built-in sample content.
+    @MainActor
+    func continueAsGuest() {
+        errorMessage = nil
+        isGuest = true
     }
 
     // MARK: - Update Profile

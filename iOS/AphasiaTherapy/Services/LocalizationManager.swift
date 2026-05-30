@@ -35,8 +35,12 @@ class LocalizationManager: ObservableObject {
             currentLanguage = language
         }
 
-        // Check if AI translation is enabled
-        useAITranslation = UserDefaults.standard.bool(forKey: "useAITranslation")
+        // Respect a saved preference; otherwise keep the default (AI translation on).
+        // bool(forKey:) returns false for an unset key, which previously disabled the
+        // feature on first launch despite the `= true` default above.
+        if UserDefaults.standard.object(forKey: "useAITranslation") != nil {
+            useAITranslation = UserDefaults.standard.bool(forKey: "useAITranslation")
+        }
     }
 
     // MARK: - Localization
@@ -210,6 +214,12 @@ class LocalizationManager: ObservableObject {
             "submit": "Submit",
             "close": "Close",
             "loading": "Loading...",
+            "listen": "Listen",
+            "need_hint": "Need a hint?",
+            "almost": "Almost!",
+            "hints_used": "Hints used",
+            "practice_no_account": "Practice without an account",
+            "no_progress_yet": "No progress yet. Complete a session to see your stats.",
 
             // Authentication
             "login": "Log In",
@@ -305,7 +315,6 @@ class LocalizationManager: ObservableObject {
             "error_loading": "Error loading data",
             "error_network": "Network error. Please check your connection.",
             "error_auth": "Authentication error. Please log in again.",
-            "try_again": "Try Again",
         ]
 
         // Polish translations (pre-translated)
@@ -323,6 +332,12 @@ class LocalizationManager: ObservableObject {
             "submit": "Wyślij",
             "close": "Zamknij",
             "loading": "Ładowanie...",
+            "listen": "Słuchaj",
+            "need_hint": "Potrzebujesz podpowiedzi?",
+            "almost": "Prawie!",
+            "hints_used": "Użyte podpowiedzi",
+            "practice_no_account": "Ćwicz bez konta",
+            "no_progress_yet": "Brak postępów. Ukończ sesję, aby zobaczyć statystyki.",
 
             // Authentication
             "login": "Zaloguj się",
@@ -418,7 +433,6 @@ class LocalizationManager: ObservableObject {
             "error_loading": "Błąd wczytywania danych",
             "error_network": "Błąd sieci. Sprawdź połączenie.",
             "error_auth": "Błąd uwierzytelniania. Zaloguj się ponownie.",
-            "try_again": "Spróbuj ponownie",
         ]
     }
 }

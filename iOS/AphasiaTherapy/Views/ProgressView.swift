@@ -8,7 +8,7 @@
 import SwiftUI
 import Charts
 
-struct ProgressView: View {
+struct ProgressDashboardView: View {
     @EnvironmentObject var authManager: AuthenticationManager
     @EnvironmentObject var apiClient: APIClient
     @EnvironmentObject var localizationManager: LocalizationManager
@@ -124,6 +124,18 @@ struct ProgressView: View {
                         .padding(.vertical)
                     }
                     .padding(.bottom, 30)
+                } else {
+                    VStack(spacing: 12) {
+                        Image(systemName: "chart.line.uptrend.xyaxis")
+                            .font(.system(size: 60))
+                            .foregroundColor(.gray)
+                        Text(localizationManager.localize("no_progress_yet"))
+                            .font(.headline)
+                            .foregroundColor(.gray)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 40)
+                    }
+                    .padding(.top, 100)
                 }
             }
             .navigationTitle(localizationManager.localize("progress"))
@@ -138,7 +150,13 @@ struct ProgressView: View {
     }
 
     private func loadProgress() {
-        guard let token = authManager.authToken else { return }
+        guard let token = authManager.authToken else {
+            // Guest / offline → locally-stored practice progress.
+            let local = LocalProgressStore.shared.userProgress()
+            self.userProgress = local.completedSessions > 0 ? local : nil
+            self.isLoading = false
+            return
+        }
 
         Task {
             do {
@@ -149,7 +167,7 @@ struct ProgressView: View {
                 }
             } catch {
                 print("Error loading progress: \(error)")
-                isLoading = false
+                await MainActor.run { self.isLoading = false }
             }
         }
     }
@@ -246,6 +264,10 @@ struct PerformanceChartView: View {
 struct LegacyChartView: View {
     let sessions: [SessionHistory]
 
+    private var sortedSessions: [SessionHistory] {
+        sessions.sorted { $0.completedAt < $1.completedAt }
+    }
+
     var body: some View {
         GeometryReader { geometry in
             ZStack {
@@ -280,11 +302,10 @@ struct LegacyChartView: View {
                 .stroke(Color.blue, lineWidth: 2)
 
                 // Points
-                ForEach(Array(sessions.sorted { $0.completedAt < $1.completedAt }.enumerated()), id: \.element.id) { index, session in
-                    let sortedSessions = sessions.sorted { $0.completedAt < $1.completedAt }
+                ForEach(sortedSessions.indices, id: \.self) { index in
                     let xStep = geometry.size.width / CGFloat(max(sortedSessions.count - 1, 1))
                     let x = CGFloat(index) * xStep
-                    let y = geometry.size.height - (CGFloat(session.score) / 100.0 * geometry.size.height)
+                    let y = geometry.size.height - (CGFloat(sortedSessions[index].score) / 100.0 * geometry.size.height)
 
                     Circle()
                         .fill(Color.blue)
@@ -402,9 +423,9 @@ enum TimeRange: String, CaseIterable, Identifiable {
     var displayName: String { rawValue }
 }
 
-struct ProgressView_Previews: PreviewProvider {
+struct ProgressDashboardView_Previews: PreviewProvider {
     static var previews: some View {
-        ProgressView()
+        ProgressDashboardView()
             .environmentObject(AuthenticationManager())
             .environmentObject(APIClient())
             .environmentObject(LocalizationManager())

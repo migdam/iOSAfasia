@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct LanguageSelectorView: View {
     @EnvironmentObject var localizationManager: LocalizationManager
