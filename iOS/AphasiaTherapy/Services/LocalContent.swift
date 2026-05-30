@@ -62,7 +62,7 @@ enum SampleContent {
             )
         ],
         estimatedDuration: 5,
-        language: language,
+        language: "en",
         imageURL: nil
     )
 
@@ -105,7 +105,7 @@ enum SampleContent {
             )
         ],
         estimatedDuration: 5,
-        language: language,
+        language: "en",
         imageURL: nil
     )
 
@@ -148,7 +148,7 @@ enum SampleContent {
             )
         ],
         estimatedDuration: 5,
-        language: language,
+        language: "en",
         imageURL: nil
     )
 }
