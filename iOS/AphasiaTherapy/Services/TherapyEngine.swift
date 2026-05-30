@@ -50,11 +50,11 @@ enum AnswerEvaluator {
     /// Lowercases, strips diacritics, and reduces any run of non-alphanumerics to a
     /// single space so punctuation and accents don't cause false negatives.
     static func normalize(_ s: String) -> String {
-        let folded = s.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
+        let folded = s.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: Locale.current)
         var result = ""
         for scalar in folded.unicodeScalars {
             if CharacterSet.alphanumerics.contains(scalar) {
-                result.unicodeScalars.append(scalar)
+                result.append(Character(scalar))
             } else {
                 result.append(" ")
             }

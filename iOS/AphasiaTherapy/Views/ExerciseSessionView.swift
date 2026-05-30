@@ -11,6 +11,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct ExerciseSessionView: View {
     @EnvironmentObject var authManager: AuthenticationManager
