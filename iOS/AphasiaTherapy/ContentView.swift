@@ -13,7 +13,7 @@ struct ContentView: View {
 
     var body: some View {
         Group {
-            if authManager.isAuthenticated {
+            if authManager.isAuthenticated || authManager.isGuest {
                 MainTabView()
             } else {
                 AuthenticationView()

@@ -149,9 +149,11 @@ class APIClient: ObservableObject {
             throw APIError.httpError(statusCode: httpResponse.statusCode)
         }
 
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-        return try decoder.decode(T.self, from: data)
+        do {
+            return try Self.makeJSONDecoder().decode(T.self, from: data)
+        } catch {
+            throw APIError.decodingError(error)
+        }
     }
 
     private func authenticatedRequest<T: Decodable>(
@@ -188,10 +190,49 @@ class APIClient: ObservableObject {
             throw APIError.httpError(statusCode: httpResponse.statusCode)
         }
 
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-        return try decoder.decode(T.self, from: data)
+        do {
+            return try Self.makeJSONDecoder().decode(T.self, from: data)
+        } catch {
+            throw APIError.decodingError(error)
+        }
     }
+
+    // MARK: - JSON Decoding
+
+    /// Builds a decoder that accepts ISO8601 dates with or without fractional
+    /// seconds (e.g. both "2024-01-01T00:00:00Z" and "2024-01-01T00:00:00.123Z").
+    static func makeJSONDecoder() -> JSONDecoder {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .custom { decoder in
+            let container = try decoder.singleValueContainer()
+            let string = try container.decode(String.self)
+            if let date = ISO8601DateFormatter.withFractionalSeconds.date(from: string)
+                ?? ISO8601DateFormatter.standard.date(from: string) {
+                return date
+            }
+            throw DecodingError.dataCorruptedError(
+                in: container,
+                debugDescription: "Invalid ISO8601 date: \(string)"
+            )
+        }
+        return decoder
+    }
+}
+
+// MARK: - ISO8601 Date Formatters
+
+private extension ISO8601DateFormatter {
+    static let withFractionalSeconds: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter
+    }()
+
+    static let standard: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime]
+        return formatter
+    }()
 }
 
 // MARK: - API Error

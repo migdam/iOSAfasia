@@ -111,7 +111,13 @@ struct SessionsView: View {
     }
 
     private func loadSessions() {
-        guard let token = authManager.authToken else { return }
+        guard let token = authManager.authToken else {
+            // Guest / no account → built-in practice content.
+            self.sessions = SampleContent.sessions(language: localizationManager.currentLanguage.rawValue)
+            filterSessions()
+            self.isLoading = false
+            return
+        }
 
         Task {
             do {
@@ -127,7 +133,14 @@ struct SessionsView: View {
                 }
             } catch {
                 print("Error loading sessions: \(error)")
-                isLoading = false
+                await MainActor.run {
+                    // Offline fallback so the screen is never a dead spinner.
+                    if self.sessions.isEmpty {
+                        self.sessions = SampleContent.sessions(language: localizationManager.currentLanguage.rawValue)
+                    }
+                    filterSessions()
+                    self.isLoading = false
+                }
             }
         }
     }

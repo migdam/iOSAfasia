@@ -238,7 +238,10 @@ class TranslationCacheManager {
     }
 
     private func cacheKey(text: String, sourceLanguage: Language, targetLanguage: Language) -> String {
-        return "\(sourceLanguage.rawValue)_\(targetLanguage.rawValue)_\(text.hashValue)"
+        // Use the source text directly so cache keys stay stable across launches.
+        // String.hashValue is seeded per process, which previously made persisted
+        // translations un-retrievable after the app restarted.
+        return "\(sourceLanguage.rawValue)_\(targetLanguage.rawValue)_\(text)"
     }
 
     private func loadCache() {
