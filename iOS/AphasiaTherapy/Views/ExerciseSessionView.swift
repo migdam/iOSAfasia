@@ -2,7 +2,12 @@
 //  ExerciseSessionView.swift
 //  AphasiaTherapy
 //
-//  View for completing therapy session exercises
+//  View for completing therapy session exercises.
+//
+//  Designed around how aphasia is actually treated:
+//   - prompts and options can be read aloud (alexia / comprehension support),
+//   - answers are scored with tolerance for normal aphasic near-misses,
+//   - a graduated cueing hierarchy helps *elicit* the word before failure.
 //
 
 import SwiftUI
@@ -22,10 +27,14 @@ struct ExerciseSessionView: View {
     @State private var startTime = Date()
     @State private var exerciseStartTime = Date()
     @State private var showResult = false
-    @State private var isCorrect = false
+    @State private var lastAccuracy: AnswerAccuracy = .incorrect
     @State private var selectedAnswer = ""
     @State private var isLoading = true
     @State private var showCompletionView = false
+
+    // Cueing hierarchy state.
+    @State private var revealedCueCount = 0
+    @State private var totalCuesUsed = 0
 
     var body: some View {
         ZStack {
@@ -35,7 +44,8 @@ struct ExerciseSessionView: View {
                 SessionCompletionView(
                     session: session,
                     results: exerciseResults,
-                    totalTime: Int(Date().timeIntervalSince(startTime))
+                    totalTime: Int(Date().timeIntervalSince(startTime)),
+                    cuesUsed: totalCuesUsed
                 )
             } else if currentExerciseIndex < exercises.count {
                 VStack(spacing: 0) {
@@ -50,7 +60,8 @@ struct ExerciseSessionView: View {
                                 exercise: exercises[currentExerciseIndex],
                                 selectedAnswer: $selectedAnswer,
                                 showResult: showResult,
-                                isCorrect: isCorrect
+                                accuracy: lastAccuracy,
+                                revealedCueCount: $revealedCueCount
                             )
 
                             // Action buttons
@@ -102,7 +113,10 @@ struct ExerciseSessionView: View {
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
-                Button(action: { presentationMode.wrappedValue.dismiss() }) {
+                Button(action: {
+                    SpeechService.shared.stop()
+                    presentationMode.wrappedValue.dismiss()
+                }) {
                     Image(systemName: "xmark")
                         .foregroundColor(.gray)
                 }
@@ -111,10 +125,17 @@ struct ExerciseSessionView: View {
         .onAppear {
             loadExercises()
         }
+        .onDisappear {
+            SpeechService.shared.stop()
+        }
     }
 
     private func loadExercises() {
-        guard let token = authManager.authToken else { return }
+        guard let token = authManager.authToken else {
+            // Guest / offline → use the exercises the session already carries.
+            useEmbeddedExercises()
+            return
+        }
 
         Task {
             do {
@@ -132,38 +153,57 @@ struct ExerciseSessionView: View {
                 }
             } catch {
                 print("Error loading exercises: \(error)")
-                await MainActor.run { self.isLoading = false }
+                await MainActor.run { self.useEmbeddedExercises() }
             }
         }
+    }
+
+    /// Falls back to the exercises embedded in the session (sample/offline content).
+    private func useEmbeddedExercises() {
+        self.exercises = session.exercises
+        self.userAnswers = Array(repeating: "", count: session.exercises.count)
+        self.isLoading = false
+        self.startTime = Date()
+        self.exerciseStartTime = Date()
     }
 
     private func checkAnswer() {
         let currentExercise = exercises[currentExerciseIndex]
         let timeSpent = Int(Date().timeIntervalSince(exerciseStartTime))
 
-        isCorrect = selectedAnswer == currentExercise.correctAnswer
+        // Tolerant scoring: credit exact matches, self-corrections and near-misses.
+        if let target = currentExercise.correctAnswer, !target.isEmpty {
+            lastAccuracy = AnswerEvaluator.evaluate(selectedAnswer, against: target)
+        } else {
+            // No answer key (e.g. open production) — credit any genuine attempt.
+            lastAccuracy = selectedAnswer.trimmingCharacters(in: .whitespaces).isEmpty ? .incorrect : .approximate
+        }
 
         let result = ExerciseAnswer(
             exerciseId: currentExercise.id,
             userAnswer: selectedAnswer,
-            isCorrect: isCorrect,
+            isCorrect: lastAccuracy.isCredited,
             timeSpent: timeSpent
         )
-
         exerciseResults.append(result)
         showResult = true
 
-        // Haptic feedback
-        if isCorrect {
-            let generator = UINotificationFeedbackGenerator()
-            generator.notificationOccurred(.success)
-        } else {
-            let generator = UINotificationFeedbackGenerator()
-            generator.notificationOccurred(.error)
+        // After an error, advance one step in the cueing hierarchy.
+        if lastAccuracy == .incorrect {
+            let cueCount = CueGenerator.cues(for: currentExercise).count
+            if revealedCueCount < cueCount { revealedCueCount += 1 }
         }
+
+        // Haptic feedback
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(lastAccuracy == .incorrect ? .error : .success)
     }
 
     private func nextExercise() {
+        SpeechService.shared.stop()
+        totalCuesUsed += revealedCueCount
+        revealedCueCount = 0
+
         if currentExerciseIndex < exercises.count - 1 {
             currentExerciseIndex += 1
             selectedAnswer = ""
@@ -190,11 +230,21 @@ struct ExerciseSessionView: View {
     }
 
     private func completeSession() {
-        guard let token = authManager.authToken else { return }
-
         let totalTime = Int(Date().timeIntervalSince(startTime))
         let correctAnswers = exerciseResults.filter { $0.isCorrect }.count
-        let score = Double(correctAnswers) / Double(exercises.count) * 100
+        let score = exercises.isEmpty ? 0 : Double(correctAnswers) / Double(exercises.count) * 100
+
+        guard let token = authManager.authToken else {
+            // Guest / offline → store progress locally so Home and Progress update.
+            LocalProgressStore.shared.record(
+                sessionName: session.name,
+                score: score,
+                timeSpent: totalTime,
+                exercisesCompleted: exerciseResults.count
+            )
+            showCompletionView = true
+            return
+        }
 
         let progressSubmission = ProgressSubmission(
             sessionId: session.id,
@@ -272,15 +322,30 @@ struct ExerciseContentView: View {
     let exercise: Exercise
     @Binding var selectedAnswer: String
     let showResult: Bool
-    let isCorrect: Bool
+    let accuracy: AnswerAccuracy
+    @Binding var revealedCueCount: Int
+
+    private var languageCode: String { localizationManager.currentLanguage.rawValue }
+    private var cues: [Cue] { CueGenerator.cues(for: exercise) }
 
     var body: some View {
         VStack(spacing: 25) {
-            // Exercise prompt
+            // Exercise prompt (with read-aloud)
             VStack(alignment: .leading, spacing: 15) {
-                Text(localizationManager.localize("question"))
-                    .font(.headline)
-                    .foregroundColor(.gray)
+                HStack {
+                    Text(localizationManager.localize("question"))
+                        .font(.headline)
+                        .foregroundColor(.gray)
+
+                    Spacer()
+
+                    Button {
+                        SpeechService.shared.speak(exercise.prompt, languageCode: languageCode)
+                    } label: {
+                        Label(localizationManager.localize("listen"), systemImage: "speaker.wave.2.fill")
+                            .font(.subheadline)
+                    }
+                }
 
                 Text(exercise.prompt)
                     .font(.title3)
@@ -319,6 +384,7 @@ struct ExerciseContentView: View {
                             isSelected: selectedAnswer == option,
                             showResult: showResult,
                             isCorrect: option == exercise.correctAnswer,
+                            languageCode: languageCode,
                             action: {
                                 if !showResult {
                                     selectedAnswer = option
@@ -334,44 +400,120 @@ struct ExerciseContentView: View {
                     .disabled(showResult)
             }
 
-            // Result feedback
+            // Result feedback (Correct / Almost / Incorrect)
             if showResult {
                 HStack(spacing: 12) {
-                    Image(systemName: isCorrect ? "checkmark.circle.fill" : "xmark.circle.fill")
+                    Image(systemName: feedbackIcon)
                         .font(.title2)
-                        .foregroundColor(isCorrect ? .green : .red)
+                        .foregroundColor(feedbackColor)
 
-                    Text(isCorrect ? localizationManager.localize("correct") : localizationManager.localize("incorrect"))
+                    Text(feedbackText)
                         .font(.headline)
-                        .foregroundColor(isCorrect ? .green : .red)
+                        .foregroundColor(feedbackColor)
 
                     Spacer()
                 }
                 .padding()
-                .background(isCorrect ? Color.green.opacity(0.1) : Color.red.opacity(0.1))
+                .background(feedbackColor.opacity(0.1))
                 .cornerRadius(12)
             }
 
-            // Hints (if available and answer is wrong)
-            if showResult && !isCorrect, let hints = exercise.hints, !hints.isEmpty {
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack {
-                        Image(systemName: "lightbulb.fill")
+            // Cueing hierarchy — available on demand, before failing.
+            if !cues.isEmpty {
+                cuePanel
+            }
+        }
+    }
+
+    // MARK: Cue panel
+
+    private var cuePanel: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            ForEach(Array(cues.prefix(revealedCueCount).enumerated()), id: \.offset) { _, cue in
+                HStack(alignment: .top, spacing: 10) {
+                    Image(systemName: "lightbulb.fill")
+                        .foregroundColor(.orange)
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(cue.label)
+                            .font(.caption)
+                            .fontWeight(.semibold)
                             .foregroundColor(.orange)
-                        Text(localizationManager.localize("hint"))
-                            .font(.headline)
+                        Text(cue.text)
+                            .font(.subheadline)
+                            .foregroundColor(.primary)
                     }
 
-                    ForEach(hints, id: \.self) { hint in
-                        Text("• \(hint)")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
+                    Spacer()
+
+                    if cue.speakable {
+                        Button {
+                            SpeechService.shared.speak(spokenText(for: cue), languageCode: languageCode)
+                        } label: {
+                            Image(systemName: "speaker.wave.2.fill")
+                                .foregroundColor(.blue)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
-                .padding()
-                .background(Color.orange.opacity(0.1))
-                .cornerRadius(12)
+                .padding(10)
+                .background(Color.orange.opacity(0.08))
+                .cornerRadius(10)
             }
+
+            if revealedCueCount < cues.count {
+                Button {
+                    revealedCueCount += 1
+                    let revealed = cues[revealedCueCount - 1]
+                    if revealed.kind == .wholeWord {
+                        SpeechService.shared.speak(spokenText(for: revealed), languageCode: languageCode)
+                    }
+                } label: {
+                    HStack {
+                        Image(systemName: "lightbulb")
+                        Text(localizationManager.localize("need_hint"))
+                            .fontWeight(.semibold)
+                    }
+                    .foregroundColor(.orange)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.orange.opacity(0.12))
+                    .cornerRadius(12)
+                }
+            }
+        }
+    }
+
+    private func spokenText(for cue: Cue) -> String {
+        switch cue.kind {
+        case .wholeWord: return exercise.correctAnswer ?? cue.text
+        default: return cue.text
+        }
+    }
+
+    // MARK: Feedback styling
+
+    private var feedbackColor: Color {
+        switch accuracy {
+        case .correct: return .green
+        case .approximate: return .blue
+        case .incorrect: return .red
+        }
+    }
+
+    private var feedbackIcon: String {
+        switch accuracy {
+        case .correct: return "checkmark.circle.fill"
+        case .approximate: return "checkmark.circle"
+        case .incorrect: return "xmark.circle.fill"
+        }
+    }
+
+    private var feedbackText: String {
+        switch accuracy {
+        case .correct: return localizationManager.localize("correct")
+        case .approximate: return localizationManager.localize("almost")
+        case .incorrect: return localizationManager.localize("incorrect")
         }
     }
 }
@@ -383,34 +525,45 @@ struct AnswerOptionButton: View {
     let isSelected: Bool
     let showResult: Bool
     let isCorrect: Bool
+    let languageCode: String
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
-            HStack {
-                Text(text)
-                    .font(.body)
-                    .foregroundColor(textColor)
+        HStack {
+            Text(text)
+                .font(.body)
+                .foregroundColor(textColor)
 
-                Spacer()
+            Spacer()
 
-                if showResult && isCorrect {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.green)
-                } else if showResult && isSelected && !isCorrect {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.red)
-                }
+            if showResult && isCorrect {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundColor(.green)
+            } else if showResult && isSelected && !isCorrect {
+                Image(systemName: "xmark.circle.fill")
+                    .foregroundColor(.red)
             }
-            .padding()
-            .background(backgroundColor)
-            .cornerRadius(12)
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(borderColor, lineWidth: 2)
-            )
+
+            // Per-option read-aloud
+            Button {
+                SpeechService.shared.speak(text, languageCode: languageCode)
+            } label: {
+                Image(systemName: "speaker.wave.2.fill")
+                    .foregroundColor(.blue)
+            }
+            .buttonStyle(.plain)
         }
-        .disabled(showResult)
+        .padding()
+        .background(backgroundColor)
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(borderColor, lineWidth: 2)
+        )
+        .contentShape(Rectangle())
+        .onTapGesture {
+            if !showResult { action() }
+        }
     }
 
     private var backgroundColor: Color {
@@ -454,6 +607,7 @@ struct SessionCompletionView: View {
     let session: TherapySession
     let results: [ExerciseAnswer]
     let totalTime: Int
+    let cuesUsed: Int
 
     var body: some View {
         VStack(spacing: 30) {
@@ -487,6 +641,14 @@ struct SessionCompletionView: View {
                     value: formatTime(totalTime),
                     color: .orange
                 )
+
+                if cuesUsed > 0 {
+                    StatRow(
+                        title: localizationManager.localize("hints_used"),
+                        value: "\(cuesUsed)",
+                        color: .purple
+                    )
+                }
             }
             .padding()
             .background(Color.gray.opacity(0.1))

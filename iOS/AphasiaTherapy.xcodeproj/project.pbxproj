@@ -26,6 +26,9 @@
 		BF0000000000000000000011 /* LocalizationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000011 /* LocalizationManager.swift */; };
 		BF0000000000000000000012 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000012 /* Extensions.swift */; };
 		BF0000000000000000000013 /* DeviceHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000013 /* DeviceHelper.swift */; };
+		BF0000000000000000000017 /* SpeechService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000017 /* SpeechService.swift */; };
+		BF0000000000000000000018 /* TherapyEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000018 /* TherapyEngine.swift */; };
+		BF0000000000000000000019 /* LocalContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000019 /* LocalContent.swift */; };
 		BF0000000000000000000014 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FE0000000000000000000014 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -49,6 +52,9 @@
 		FE0000000000000000000011 /* LocalizationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizationManager.swift; sourceTree = "<group>"; };
 		FE0000000000000000000012 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		FE0000000000000000000013 /* DeviceHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceHelper.swift; sourceTree = "<group>"; };
+		FE0000000000000000000017 /* SpeechService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechService.swift; sourceTree = "<group>"; };
+		FE0000000000000000000018 /* TherapyEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TherapyEngine.swift; sourceTree = "<group>"; };
+		FE0000000000000000000019 /* LocalContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalContent.swift; sourceTree = "<group>"; };
 		FE0000000000000000000014 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FE0000000000000000000015 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FE0000000000000000000016 /* AphasiaTherapy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AphasiaTherapy.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -120,6 +126,9 @@
 				FE000000000000000000000F /* AuthenticationManager.swift */,
 				FE0000000000000000000010 /* TranslationService.swift */,
 				FE0000000000000000000011 /* LocalizationManager.swift */,
+				FE0000000000000000000017 /* SpeechService.swift */,
+				FE0000000000000000000018 /* TherapyEngine.swift */,
+				FE0000000000000000000019 /* LocalContent.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -238,6 +247,9 @@
 				BF0000000000000000000011 /* LocalizationManager.swift in Sources */,
 				BF0000000000000000000012 /* Extensions.swift in Sources */,
 				BF0000000000000000000013 /* DeviceHelper.swift in Sources */,
+				BF0000000000000000000017 /* SpeechService.swift in Sources */,
+				BF0000000000000000000018 /* TherapyEngine.swift in Sources */,
+				BF0000000000000000000019 /* LocalContent.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

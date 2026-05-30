@@ -214,6 +214,12 @@ class LocalizationManager: ObservableObject {
             "submit": "Submit",
             "close": "Close",
             "loading": "Loading...",
+            "listen": "Listen",
+            "need_hint": "Need a hint?",
+            "almost": "Almost!",
+            "hints_used": "Hints used",
+            "practice_no_account": "Practice without an account",
+            "no_progress_yet": "No progress yet. Complete a session to see your stats.",
 
             // Authentication
             "login": "Log In",
@@ -326,6 +332,12 @@ class LocalizationManager: ObservableObject {
             "submit": "Wyślij",
             "close": "Zamknij",
             "loading": "Ładowanie...",
+            "listen": "Słuchaj",
+            "need_hint": "Potrzebujesz podpowiedzi?",
+            "almost": "Prawie!",
+            "hints_used": "Użyte podpowiedzi",
+            "practice_no_account": "Ćwicz bez konta",
+            "no_progress_yet": "Brak postępów. Ukończ sesję, aby zobaczyć statystyki.",
 
             // Authentication
             "login": "Zaloguj się",

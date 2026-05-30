@@ -146,7 +146,14 @@ struct HomeView: View {
     }
 
     private func loadData() {
-        guard let token = authManager.authToken else { return }
+        guard let token = authManager.authToken else {
+            // Guest / offline → show locally-stored practice progress.
+            let progress = LocalProgressStore.shared.userProgress()
+            self.userProgress = progress
+            self.recentSessions = progress.sessionHistory
+            self.isLoading = false
+            return
+        }
 
         Task {
             do {

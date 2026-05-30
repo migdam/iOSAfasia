@@ -124,6 +124,18 @@ struct ProgressDashboardView: View {
                         .padding(.vertical)
                     }
                     .padding(.bottom, 30)
+                } else {
+                    VStack(spacing: 12) {
+                        Image(systemName: "chart.line.uptrend.xyaxis")
+                            .font(.system(size: 60))
+                            .foregroundColor(.gray)
+                        Text(localizationManager.localize("no_progress_yet"))
+                            .font(.headline)
+                            .foregroundColor(.gray)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 40)
+                    }
+                    .padding(.top, 100)
                 }
             }
             .navigationTitle(localizationManager.localize("progress"))
@@ -138,7 +150,13 @@ struct ProgressDashboardView: View {
     }
 
     private func loadProgress() {
-        guard let token = authManager.authToken else { return }
+        guard let token = authManager.authToken else {
+            // Guest / offline → locally-stored practice progress.
+            let local = LocalProgressStore.shared.userProgress()
+            self.userProgress = local.completedSessions > 0 ? local : nil
+            self.isLoading = false
+            return
+        }
 
         Task {
             do {
